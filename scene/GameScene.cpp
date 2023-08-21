@@ -50,7 +50,7 @@ void GameScene::Update() {
 	//プレイヤー更新
 	player_->Update(); 
 
-	// サウンド
+	//サウンド
 	if (input_->TriggerKey(DIK_RETURN)) {
 		audio_->StopWave(voiceHandle_);
 	}
@@ -61,7 +61,7 @@ void GameScene::Update() {
 	}
 #endif //_DEBUG
 
-	// デバッグカメラ
+	//デバッグカメラ
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
@@ -99,7 +99,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// プレイヤー
+	//プレイヤー
 	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
