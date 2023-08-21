@@ -1,8 +1,6 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "ImGuiManager.h"
-#include "PrimitiveDrawer.h"
 #include "AxisIndicator.h"
 
 GameScene::GameScene() {}
@@ -11,6 +9,7 @@ GameScene::~GameScene() {
 
 	delete model_;
 	delete debugCamera_;
+	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -24,6 +23,10 @@ void GameScene::Initialize() {
 
 	//モデル
 	model_ = Model::Create();
+
+	//プレイヤー
+	player_ = new Player();
+	player_->Initialize(model_, textureHandle_);
 
 	//行列初期化
 	worldTransform_.Initialize();
@@ -44,19 +47,29 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	//プレイヤー更新
+	player_->Update(); 
+
 	// サウンド
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_RETURN)) {
 		audio_->StopWave(voiceHandle_);
 	}
 
-	// デバッグ
-	ImGui::Begin("Debug");
-	ImGui::InputFloat3("InputFloat3", inputFloat3);
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.0f, 1.0f);
-	ImGui::End();
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_SPACE)) {
+		isDebugCameraActive_ = true;
+	}
+#endif //_DEBUG
 
 	// デバッグカメラ
-	debugCamera_->Update();
+	if (isDebugCameraActive_) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
 }
 
 void GameScene::Draw() {
@@ -86,8 +99,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// モデル
-	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
+	// プレイヤー
+	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
