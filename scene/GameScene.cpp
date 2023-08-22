@@ -10,6 +10,7 @@ GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	delete player_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -27,6 +28,11 @@ void GameScene::Initialize() {
 	//プレイヤー
 	player_ = new Player();
 	player_->Initialize(model_, textureHandle_);
+
+	// 敵
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_, pos_);
+	enemy_->SetPlayer(player_);
 
 	//行列初期化
 	worldTransform_.Initialize();
@@ -49,6 +55,9 @@ void GameScene::Update() {
 
 	//プレイヤー更新
 	player_->Update(); 
+
+	// 敵の更新
+	enemy_->Update();
 
 	//サウンド
 	if (input_->TriggerKey(DIK_RETURN)) {
@@ -101,6 +110,9 @@ void GameScene::Draw() {
 
 	//プレイヤー
 	player_->Draw(viewProjection_);
+
+	// 敵
+	enemy_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
