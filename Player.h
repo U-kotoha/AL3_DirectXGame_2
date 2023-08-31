@@ -6,6 +6,7 @@
 #include "WorldTransform.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "Sprite.h"
 
 /// <summary>
 /// 自キャラ
@@ -20,12 +21,12 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 position);
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 描画
@@ -37,8 +38,25 @@ public:
 	/// </summary>
 	void Attack();
 
+	// 衝突時コールバック関数
+	void OnCollision();
+
+	/// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent"> 親となるワールドトランスフォーム</param>
+	void SetParent(const WorldTransform* parent);
+
+	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
 	// ワールド座標
 	Vector3 GetWorldPosition();
+
+	// 弾リスト取得
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 private:
 	//ワールド
@@ -55,4 +73,11 @@ private:
 
 	// 弾
 	std::list<PlayerBullet*> bullets_;
+
+	// 3Dレティクル
+	WorldTransform worldTransform3DReticle_;
+	// 2Dレティクル
+	Sprite* sprite2DReticle_ = nullptr;
+
+	Model* reticle = nullptr;
 };

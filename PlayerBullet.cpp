@@ -37,3 +37,18 @@ void PlayerBullet::Draw(ViewProjection& view) {
 	// モデルの描画
 	model_->Draw(worldTransform_, view, texturehandle_);
 }
+
+void PlayerBullet::OnCollision() {
+	// デスフラグ
+	isDead_ = true;
+}
+
+Vector3 PlayerBullet::GetWorldPosition() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}

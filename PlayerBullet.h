@@ -28,8 +28,14 @@ public:
 	/// <param name="view">ビュープロダクション</param>
 	void Draw(ViewProjection& view);
 
+	// 衝突時コールバック関数
+	void OnCollision();
+
 	// メンバ関数
 	bool IsDead() const { return isDead_; }
+
+	// ワールド座標
+	Vector3 GetWorldPosition();
 
 private:
 	// ワールド変換

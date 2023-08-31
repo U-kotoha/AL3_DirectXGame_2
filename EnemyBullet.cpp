@@ -37,3 +37,18 @@ void EnemyBullet::Draw(ViewProjection& view) {
 	// モデルの描画
 	model_->Draw(world_, view, texturehandle_);
 }
+
+void EnemyBullet::OnCollision() {
+	// デスフラグ
+	isDead_ = true;
+}
+
+Vector3 EnemyBullet::GetWorldPosition() {
+	Vector3 worldPos;
+
+	worldPos.x = world_.translation_.x;
+	worldPos.y = world_.translation_.y;
+	worldPos.z = world_.translation_.z;
+
+	return worldPos;
+}
