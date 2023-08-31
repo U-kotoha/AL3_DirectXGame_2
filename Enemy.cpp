@@ -5,6 +5,10 @@
 #include "GameScene.h"
 
 Enemy::~Enemy() {
+	// 弾の解放
+	for (EnemyBullet* bullet : bullets_) {
+		delete bullet;
+	}
 }
 
 void Enemy::Initialize(Model* model, const Vector3& pos) {
@@ -15,7 +19,7 @@ void Enemy::Initialize(Model* model, const Vector3& pos) {
 	model_ = model;
 
 	// テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("black.png");
+	textureHandle_ = TextureManager::Load("enemy.png");
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -28,6 +32,15 @@ void Enemy::Initialize(Model* model, const Vector3& pos) {
 }
 
 void Enemy::Update() {
+
+	// デスフラグの立った弾を削除
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	switch (phase_) {
 	case Enemy::Phase::Approch:
@@ -45,7 +58,7 @@ void Enemy::Update() {
 		}
 
 		// 一定の位置になったら行動フェーズが変わる
-		if (worldTransform_.translation_.z < 0.0f) {
+		if (worldTransform_.translation_.z < -20.0f) {
 			phase_ = Enemy::Phase::Leave;
 		}
 		break;
@@ -55,6 +68,11 @@ void Enemy::Update() {
 		phase_ = Enemy::Phase::Approch;
 
 		break;
+	}
+
+	// 弾の更新
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Update();
 	}
 
 	// 行列更新
@@ -67,6 +85,11 @@ void Enemy::Update() {
 void Enemy::Draw(ViewProjection& viewProjection) {
 	// 3Dモデルの描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	// 弾の描画
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
 }
 
 void Enemy::Fire() {
@@ -102,10 +125,11 @@ void Enemy::Fire() {
 	EnemyBullet* newBullet = new EnemyBullet;
 	newBullet->Initialize(model_, worldTransform_.translation_, normal);
 
-	gameScene_->AddEnemyBullet(newBullet);
+	// 弾の登録
+	bullets_.push_back(newBullet);
 }
 
-void Enemy::OnCollision() {}
+void Enemy::OnCollision() { flag = true; }
 
 void Enemy::Approch_() {
 	// 発射タイマーを初期化

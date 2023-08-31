@@ -11,10 +11,8 @@
 #include "DebugCamera.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "EnemyBullet.h"
 #include "Skydome.h"
 #include "RailCamera.h"
-#include <sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -52,30 +50,6 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollisions();
 
-	/// <summary>
-	/// 敵発生データの読み込み
-	/// </summary>
-	void LoadEnemyPopDate();
-
-	/// <summary>
-	/// 敵発生コマンドの更新
-	/// </summary>
-	void UpdateEnemyPopCommands();
-
-	/// <summary>
-	/// 敵弾を追加する
-	/// </summary>
-	/// <param name="enemyBullet">敵弾</param>
-	void AddEnemyBullet(EnemyBullet* enemyBullet);
-
-	/// <summary>
-	/// 敵発生
-	/// </summary>
-	void AddEnemy(Vector3 pos);
-
-	// 弾リスト取得
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
-
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -107,9 +81,8 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 
 	// 敵
-	std::list<Enemy*> enemy_;
-	std::list<EnemyBullet*> bullets_;
-	std::stringstream enemyPopCommands;
+	Enemy* enemy_ = nullptr;
+	Vector3 pos_ = {20.0f, 10.0f, 50.0f};
 
 	// 天球
 	Skydome* skydome_ = nullptr;
@@ -117,7 +90,4 @@ private: // メンバ変数
 
 	// レールカメラ
 	RailCamera* railCamera_ = nullptr;
-
-	bool isWait_ = false;
-	int32_t WaitTimer_;
 };

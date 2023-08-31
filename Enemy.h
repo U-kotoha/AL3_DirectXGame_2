@@ -10,7 +10,6 @@
 /// 敵
 /// </summary>
 class Player;
-class GameScene;
 
 class Enemy {
 public:
@@ -53,13 +52,12 @@ public:
 		Leave,   // 離脱する
 	};
 
+	void SetPlayer(Player* player) { player_ = player; }
 	// ワールド座標
 	Vector3 GetWorldPosition();
 
-	bool GetIsDead() { return isDead_; }
-
-	void SetPlayer(Player* player) { player_ = player; }
-	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+	// 弾リスト取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 
 private:
 	// ワールドトランスフォーム
@@ -74,15 +72,14 @@ private:
 	// フェーズ
 	Phase phase_ = Enemy::Phase::Approch;
 
+	// 敵の弾
+	std::list<EnemyBullet*> bullets_;
+
 	// 発射タイマー
 	int32_t fireTimer = 60;
-	// デスタイマー
-	int32_t deathTimer_ = 120;
-	// デスフラグ
-	bool isDead_ = false;
 
 	// プレイヤー
 	Player* player_ = nullptr;
-	// ゲームシーン
-	GameScene* gameScene_ = nullptr;
+
+	int flag = false;
 };
