@@ -14,6 +14,16 @@
 #include "Skydome.h"
 #include "RailCamera.h"
 
+// シーン管理
+enum modeName {
+
+	title,
+	stage,
+	gameover,
+	gameclear,
+
+};
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -82,7 +92,7 @@ private: // メンバ変数
 
 	// 敵
 	Enemy* enemy_ = nullptr;
-	Vector3 pos_ = {20.0f, 10.0f, 50.0f};
+	Vector3 pos_ = {40.0f, 10.0f, 50.0f};
 
 	// 天球
 	Skydome* skydome_ = nullptr;
@@ -90,4 +100,6 @@ private: // メンバ変数
 
 	// レールカメラ
 	RailCamera* railCamera_ = nullptr;
+	
+	int Nowmode = title;
 };

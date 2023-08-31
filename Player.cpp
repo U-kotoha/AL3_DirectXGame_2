@@ -132,20 +132,20 @@ void Player::Update(ViewProjection& viewProjection) {
 	// 行列転送
 	worldTransform_.TransferMatrix();
 
-	// ImGui
-	// ウィンドウのサイズ、座標の指定
-	ImGui::SetNextWindowPos({0, 0});
-	ImGui::SetNextWindowSize({300, 100});
+	//// ImGui
+	//// ウィンドウのサイズ、座標の指定
+	//ImGui::SetNextWindowPos({0, 0});
+	//ImGui::SetNextWindowSize({300, 100});
 
-	ImGui::Begin("Debug");
-	// 座標設定
-	float sliderValue3[3] = {
-	    worldTransform_.translation_.x, worldTransform_.translation_.y,
-	    worldTransform_.translation_.z};
-	ImGui::SliderFloat3("Player", sliderValue3, -20.0f, 20.0f);
-	worldTransform_.translation_ = {sliderValue3[0], sliderValue3[1], sliderValue3[2]};
+	//ImGui::Begin("Debug");
+	//// 座標設定
+	//float sliderValue3[3] = {
+	//    worldTransform_.translation_.x, worldTransform_.translation_.y,
+	//    worldTransform_.translation_.z};
+	//ImGui::SliderFloat3("Player", sliderValue3, -20.0f, 20.0f);
+	//worldTransform_.translation_ = {sliderValue3[0], sliderValue3[1], sliderValue3[2]};
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 void Player::Draw(ViewProjection& viewProjection) {

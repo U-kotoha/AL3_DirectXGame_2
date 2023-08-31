@@ -23,10 +23,10 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	//テクスチャ
+	// テクスチャ
 	textureHandle_ = TextureManager::Load("player.png");
 
-	//モデル
+	// モデル
 	model_ = Model::Create();
 
 	// プレイヤー
@@ -55,51 +55,63 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	//サウンド
-	soundDataHandle_ = audio_->LoadWave("fanfare.wav");
-	audio_->PlayWave(soundDataHandle_);
+	soundDataHandle_ = audio_->LoadWave("stage.wav");
+	audio_->PlayWave(soundDataHandle_, true, 0.5);
 	voiceHandle_ = audio_->PlayWave(soundDataHandle_, true);
 
 	//デバッグカメラ
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	// 軸方向の表示
-	AxisIndicator::GetInstance()->SetVisible(true);
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	/*AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);*/
 }
 
 void GameScene::Update() {
 
-	// 更新
-	player_->Update(viewProjection_);
-	enemy_->Update();
-	skydome_->Update();
-	//railCamera_->Update();
+	switch (Nowmode) {
+	case title:
+		if (input_->TriggerKey(DIK_SPACE)) {
+			Nowmode = stage;
+		}
+		break;
 
-	// 衝突判定
-	CheckAllCollisions();
+	case stage:
+		// 更新
+		player_->Update(viewProjection_);
+		enemy_->Update();
+		skydome_->Update();
+		// railCamera_->Update();
 
-	//サウンド
-	if (input_->TriggerKey(DIK_RETURN)) {
-		audio_->StopWave(voiceHandle_);
-	}
+		// 衝突判定
+		CheckAllCollisions();
 
-	#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_BACKSPACE)) {
-		isDebugCameraActive_ = true;
-	}
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_BACKSPACE)) {
+			isDebugCameraActive_ = true;
+		}
 #endif //_DEBUG
 
-	// デバッグカメラ
-	if (isDebugCameraActive_) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.matView = railCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
+		// デバッグカメラ
+		if (isDebugCameraActive_) {
+			debugCamera_->Update();
+			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+			viewProjection_.TransferMatrix();
+		} else {
+			viewProjection_.matView = railCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+			viewProjection_.TransferMatrix();
+		}
+
+		break;
+
+	case gameclear:
+		audio_->StopWave(voiceHandle_);
+
+		break;
 	}
+
 }
 
 void GameScene::Draw() {
@@ -129,11 +141,24 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// 描画
-	player_->Draw(viewProjection_);
-	enemy_->Draw(viewProjection_);
-	skydome_->Draw(viewProjection_);
+	switch (Nowmode) {
+	case title:
+		skydome_->Draw(viewProjection_);
 
+		break;
+	
+	case stage:
+		// 描画
+		player_->Draw(viewProjection_);
+		enemy_->Draw(viewProjection_);
+		skydome_->Draw(viewProjection_);
+
+		break;
+
+	case gameclear:
+
+		break;
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -145,9 +170,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
-	player_->DrawUI();
-
+	switch (Nowmode) {
+	case stage:
+		player_->DrawUI();
+		break;
+	}
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
@@ -197,7 +224,7 @@ void GameScene::CheckAllCollisions() {
 
 		// 球と球の交差判定
 		if (distance <= Radius) {
-			enemy_->OnCollision();
+			Nowmode = gameclear;
 			bullet->OnCollision();
 		}
 	}

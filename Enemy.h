@@ -80,6 +80,4 @@ private:
 
 	// プレイヤー
 	Player* player_ = nullptr;
-
-	int flag = false;
 };
